@@ -14,14 +14,14 @@ namespace OnlineShopPoC
         /// Gets all the products in the catalog.
         /// </summary>
         /// <returns>A concurrent dictionary containing the products.</returns>
-        Task<ConcurrentDictionary<Guid, Product>> GetProductsAsync();
+        Task<List<Product>> GetProductsAsync(IClock clock);
 
         /// <summary>
         /// Gets a product from the catalog by its ID.
         /// </summary>
         /// <param name="productId">The ID of the product.</param>
         /// <returns>The product with the specified ID.</returns>
-        Task<Product> GetProductByIdAsync(Guid productId);
+        Task<Product> GetProductByIdAsync(Guid productId, IClock clock);
 
         /// <summary>
         /// Adds a new product to the catalog.

@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents an in-memory implementation of a time client for retrieving date and time information.
     /// </summary>
-    public class InMemoryTimeClient : ITimeClient
+    public class CurrentClock : IClock
     {
         /// <summary>
         /// Gets the current UTC date and time.

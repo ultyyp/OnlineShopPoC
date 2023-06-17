@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a product in an online shop.
     /// </summary>
-    public class Product
+    public class Product : ICloneable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Product"/> class with the specified name and price.
@@ -49,5 +49,10 @@
 
         /// <summary> Product's quantity in stock. </summary>
         public double Stock { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

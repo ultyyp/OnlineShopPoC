@@ -15,9 +15,23 @@ namespace OnlineShopPoC
         /// Gets all the products in the catalog.
         /// </summary>
         /// <returns>A concurrent dictionary containing the products.</returns>
-        public async Task<ConcurrentDictionary<Guid, Product>> GetProductsAsync()
+        public async Task<List<Product>> GetProductsAsync(IClock clock)
         {
-            return _products;
+            if (clock.GetLocalDate().DayOfWeek == DayOfWeek.Monday)
+            {
+                List<Product> newProducts = new List<Product>(_products.Values.ToList().Count);
+                _products.Values.ToList().ForEach((item) =>
+                {
+                    var newItem = (Product)item.Clone();
+                    newItem.Price *= (decimal)0.70;
+                    newProducts.Add(newItem);
+                });
+                return newProducts;
+            }
+            else
+            {
+                return _products.Values.ToList();
+            }
         }
 
         /// <summary>
@@ -25,7 +39,7 @@ namespace OnlineShopPoC
         /// </summary>
         /// <param name="productId">The ID of the product.</param>
         /// <returns>The product with the specified ID.</returns>
-        public async Task<Product> GetProductByIdAsync(Guid productId)
+        public async Task<Product> GetProductByIdAsync(Guid productId, IClock clock)
         {
             if (!_products.TryGetValue(productId, out var product))
             {
@@ -33,7 +47,16 @@ namespace OnlineShopPoC
             }
             else
             {
-                return product;
+                if (clock.GetLocalDate().DayOfWeek == DayOfWeek.Monday)
+                {
+                    var newProduct = (Product)product.Clone();
+                    newProduct.Price *= (decimal)0.70;
+                    return newProduct;
+                }
+                else
+                {
+                    return product;
+                }
             }
         }
 
@@ -166,5 +189,7 @@ namespace OnlineShopPoC
 
             return products;
         }
+
+        
     }
 }

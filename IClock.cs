@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a time client for retrieving date and time information.
     /// </summary>
-    public interface ITimeClient
+    public interface IClock
     {
         /// <summary>
         /// Gets the current UTC date and time.

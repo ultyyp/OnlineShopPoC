@@ -7,7 +7,7 @@ builder.Services.AddSwaggerGen();
 
 //Singletons
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();
-builder.Services.AddSingleton<ITimeClient, InMemoryTimeClient>();
+builder.Services.AddSingleton<IClock, CurrentClock>();
 
 var app = builder.Build();
 app.UseSwagger();
@@ -33,27 +33,14 @@ async Task<IResult> AddProductAsync(Product product, HttpContext context, ICatal
     return Results.Created($"/products/{product.Id}", product);
 }
 
-async Task<List<Product>> GetProductsAsync(ICatalog catalog, ITimeClient timeClient)
+async Task<List<Product>> GetProductsAsync(ICatalog catalog, IClock clock)
 {
-    var dictionary = await catalog.GetProductsAsync();
-    if (timeClient.GetLocalDate().DayOfWeek == DayOfWeek.Monday)
-    {
-        foreach (var item in dictionary)
-        {
-            item.Value.Price = item.Value.Price * (decimal)0.70;
-        }
-    }
-    return dictionary.Values.ToList();
+    return await catalog.GetProductsAsync(clock); ;
 }
 
-async Task<Product> GetProductByIdAsync(string id, ICatalog catalog, ITimeClient timeClient)
+async Task<Product> GetProductByIdAsync(string id, ICatalog catalog, IClock clock)
 {
-    var product = await catalog.GetProductByIdAsync(Guid.Parse(id));
-    if (timeClient.GetLocalDate().DayOfWeek == DayOfWeek.Monday)
-    {
-        product.Price = product.Price * (decimal)0.70;
-    }
-    return product;
+    return await catalog.GetProductByIdAsync(Guid.Parse(id), clock); ;
 }
 
 async Task<IResult> UpdateProductByIdAsync(string productId, Product newProduct, ICatalog catalog)
