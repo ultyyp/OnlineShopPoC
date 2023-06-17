@@ -7,7 +7,7 @@ namespace OnlineShopPoC
     /// <summary>
     /// Represents a catalog of products in an online shop.
     /// </summary>
-    public class Catalog
+    public class InMemoryCatalog : ICatalog
     {
         private ConcurrentDictionary<Guid, Product> _products = GenerateProducts(20);
 
