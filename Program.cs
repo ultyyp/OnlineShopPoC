@@ -1,5 +1,9 @@
+using MailKit.Security;
+using MimeKit.Text;
+using MimeKit;
 using OnlineShopPoC;
 using System.Collections.Generic;
+using MailKit.Net.Smtp;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -8,6 +12,10 @@ builder.Services.AddSwaggerGen();
 //Singletons
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();
 builder.Services.AddSingleton<IClock, CurrentClock>();
+builder.Services.AddSingleton<IEmailSender, SendGridEmailSender>();
+
+//Hosted Services
+builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();
 
 var app = builder.Build();
 app.UseSwagger();
