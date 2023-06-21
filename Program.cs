@@ -12,7 +12,9 @@ builder.Services.AddSwaggerGen();
 //Singletons
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();
 builder.Services.AddSingleton<IClock, CurrentClock>();
-builder.Services.AddSingleton<IEmailSender, SendGridEmailSender>();
+
+//Scoped
+builder.Services.AddScoped<IEmailSender, SendGridEmailSender>();
 
 //Hosted Services
 builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();

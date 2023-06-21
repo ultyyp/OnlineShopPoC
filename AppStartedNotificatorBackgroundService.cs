@@ -10,68 +10,71 @@ using System.Reflection;
 namespace OnlineShopPoC
 {
     /// <summary>
-    /// Background service that sends email notifications on application startup and periodically.
+    /// Background service that sends startup and status notification emails.
     /// </summary>
     public class AppStartedNotificatorBackgroundService : BackgroundService
     {
-        private readonly IEmailSender _emailSender;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IClock _clock;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AppStartedNotificatorBackgroundService"/> class.
+        /// Initializes a new instance of the AppStartedNotificatorBackgroundService class.
         /// </summary>
-        /// <param name="emailSender">The email sender service.</param>
-        /// <param name="clock">The clock service.</param>
-        public AppStartedNotificatorBackgroundService(IEmailSender emailSender, IClock clock)
+        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="clock">The clock used to get the local date and time.</param>
+        public AppStartedNotificatorBackgroundService(IServiceProvider serviceProvider, IClock clock)
         {
-            _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         }
 
         /// <summary>
-        /// Executes the background service logic.
+        /// Executes the background service asynchronously.
         /// </summary>
-        /// <param name="stoppingToken">Cancellation token that can be used to stop the service.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <param name="stoppingToken">The cancellation token.</param>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await SendStartupEmail();
+            await using var scope = _serviceProvider.CreateAsyncScope();
+            var localServiceProvider = scope.ServiceProvider;
+            var emailSender = localServiceProvider.GetRequiredService<IEmailSender>();
+
+            await SendStartupEmail(emailSender);
             Console.WriteLine("Startup Email Sent");
 
             using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
             Stopwatch sw = Stopwatch.StartNew();
             while (await timer.WaitForNextTickAsync(stoppingToken))
             {
-                await SendStatusEmail();
+                await SendStatusEmail(emailSender);
                 Console.WriteLine("Status Email Sent");
             }
         }
 
         /// <summary>
-        /// Sends the startup email notification.
+        /// Sends a startup email notification.
         /// </summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task SendStartupEmail()
+        /// <param name="emailSender">The email sender service.</param>
+        private async Task SendStartupEmail(IEmailSender emailSender)
         {
             var toEmail = Environment.GetEnvironmentVariable("myemail2");
-            await _emailSender.SendEmailAsync(toEmail, "Server Started", "The server has been started on " + _clock.GetLocalDate().ToString());
+            await emailSender.SendEmailAsync(toEmail, "Server Started", "The server has been started on " + _clock.GetLocalDate().ToString());
         }
 
         /// <summary>
-        /// Sends the status email notification.
+        /// Sends a status email notification.
         /// </summary>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task SendStatusEmail()
+        /// <param name="emailSender">The email sender service.</param>
+        private async Task SendStatusEmail(IEmailSender emailSender)
         {
             var toEmail = Environment.GetEnvironmentVariable("myemail2");
-            await _emailSender.SendEmailAsync(toEmail, "Server Started", "Server is working properly on " + _clock.GetLocalDate().ToString()
+            await emailSender.SendEmailAsync(toEmail, "Server Started", "Server is working properly on " + _clock.GetLocalDate().ToString()
                 + " with a RAM usage of " + GetMemoryUsage() + "B");
         }
 
         /// <summary>
-        /// Retrieves the memory usage of the application.
+        /// Retrieves the memory usage of the current process.
         /// </summary>
-        /// <returns>A string representing the memory usage.</returns>
+        /// <returns>The memory usage in bytes.</returns>
         private string GetMemoryUsage()
         {
             try
