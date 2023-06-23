@@ -4,10 +4,17 @@ using MimeKit;
 using OnlineShopPoC;
 using System.Collections.Generic;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Options
+builder.Services.AddOptions<SendGridConfig>()
+    .BindConfiguration("SendGridConfig")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 //Singletons
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();
@@ -15,6 +22,7 @@ builder.Services.AddSingleton<IClock, CurrentClock>();
 
 //Scoped
 builder.Services.AddScoped<IEmailSender, SendGridEmailSender>();
+builder.Services.Decorate<IEmailSender, EmailSenderLoggingDecorator>();
 
 //Hosted Services
 builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();
@@ -36,6 +44,19 @@ app.MapPost("/products", AddProductAsync); //C
 app.MapGet("/products/all", GetProductsAsync); //R
 app.MapPut("/products/{productId}", UpdateProductByIdAsync); //U
 app.MapDelete("/products/{productId}", DeleteProductByIdAsync); //D
+
+//TESTING
+app.MapGet("/send_email", SendEmail);
+
+async Task SendEmail(IServiceProvider serviceProvider)
+{
+    await using var scope = serviceProvider.CreateAsyncScope();
+    var localServiceProvider = scope.ServiceProvider;
+    var emailSender = localServiceProvider.GetRequiredService<IEmailSender>();
+
+    await emailSender.SendEmailAsync(Environment.GetEnvironmentVariable("myemail2"), "Testing", "Test test test" + DateTime.Now.ToString());
+}
+
 
 async Task<IResult> AddProductAsync(Product product, HttpContext context, ICatalog catalog)
 {
