@@ -11,25 +11,19 @@ namespace OnlineShopPoC
     {
         private readonly SendGridClient _client;
         private readonly SendGridConfig _sendGridConfig;
-        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the SendGridEmailSender class.
         /// </summary>
-        /// <param name="serviceProvider">The service provider used to resolve dependencies.</param>
-        public SendGridEmailSender(IServiceProvider serviceProvider)
+        /// <param name="config">The config gotten from appsettings.json.</param>
+        public SendGridEmailSender(IOptionsSnapshot<SendGridConfig> config)
         {
-            ArgumentNullException.ThrowIfNull(serviceProvider);
-
-            _serviceProvider = serviceProvider;
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SendGridConfig>>();
-               _sendGridConfig = options.Value;
-            }
-
+            ArgumentNullException.ThrowIfNull(config);
+            _sendGridConfig = config.Value;
             _client = new SendGridClient(_sendGridConfig.ApiKey);
         }
+
+        
 
         /// <summary>
         /// Sends an email asynchronously using SendGrid.

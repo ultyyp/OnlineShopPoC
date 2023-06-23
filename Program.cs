@@ -48,12 +48,8 @@ app.MapDelete("/products/{productId}", DeleteProductByIdAsync); //D
 //TESTING
 app.MapGet("/send_email", SendEmail);
 
-async Task SendEmail(IServiceProvider serviceProvider)
+async Task SendEmail(IEmailSender emailSender)
 {
-    await using var scope = serviceProvider.CreateAsyncScope();
-    var localServiceProvider = scope.ServiceProvider;
-    var emailSender = localServiceProvider.GetRequiredService<IEmailSender>();
-
     await emailSender.SendEmailAsync(Environment.GetEnvironmentVariable("myemail2"), "Testing", "Test test test" + DateTime.Now.ToString());
 }
 
