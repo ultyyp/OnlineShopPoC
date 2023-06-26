@@ -36,12 +36,12 @@ namespace OnlineShopPoC
                 
                 Log.Information("Sending Email Failed! Retrying...");
                 Log.Information($"Sending email to {recipient}... {subject}, {body}");
-                var retryrespone = await _emailSender.SendEmailAsync(recipient, subject, body);
-                if(!retryrespone.IsSuccessStatusCode) 
+                var retryresponse = await _emailSender.SendEmailAsync(recipient, subject, body);
+                if(!retryresponse.IsSuccessStatusCode) 
                 {
                     Log.Information("Retry Failed! Please Try Again Later!");
                 }
-                else if(response.IsSuccessStatusCode)
+                else if(retryresponse.IsSuccessStatusCode)
                 {
                     Log.Information("Retry Successful!");
                 }
