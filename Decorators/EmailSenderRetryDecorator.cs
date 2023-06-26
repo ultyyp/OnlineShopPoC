@@ -31,7 +31,7 @@ namespace OnlineShopPoC.Decorators
             ArgumentNullException.ThrowIfNull(configuration);
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _emailRetryAttempts = configuration.GetValue<int>("EmailRetryAttempts");
+            _emailRetryAttempts = configuration.GetValue<int>("EmailRetryAttemtps");
         }
 
         /// <summary>
@@ -65,7 +65,6 @@ namespace OnlineShopPoC.Decorators
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error While Connecting To The Server!");
-                
             }
         }   
     }
