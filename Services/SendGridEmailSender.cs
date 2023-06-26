@@ -2,8 +2,9 @@
 using SendGrid;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using OnlineShopPoC.Interfaces;
 
-namespace OnlineShopPoC
+namespace OnlineShopPoC.Services
 {
     /// <summary>
     /// Implementation of the email sender using SendGrid service.
@@ -32,7 +33,7 @@ namespace OnlineShopPoC
         /// <param name="subject">The subject of the email.</param>
         /// <param name="body">The body content of the email.</param>
         /// <returns>A Task representing the asynchronous operation with the response.</returns>
-        public async Task<Response> SendEmailAsync(string recipient, string subject, string body)
+        public async Task SendEmailAsync(string recipient, string subject, string body)
         {
             ArgumentNullException.ThrowIfNull(recipient);
             ArgumentNullException.ThrowIfNull(subject);
@@ -47,10 +48,14 @@ namespace OnlineShopPoC
             };
 
             msg.AddTo(new EmailAddress(recipient, "To user"));
-            return await _client.SendEmailAsync(msg).ConfigureAwait(false);
+            var response = await _client.SendEmailAsync(msg).ConfigureAwait(false);
+            if(!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"Email Could Not Be Sent! Error Code:{response.StatusCode}, Error Body:{response.Body}");
+            }
         }
 
     }
 
-          
+
 }

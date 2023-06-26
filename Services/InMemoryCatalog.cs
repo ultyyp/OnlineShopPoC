@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using OnlineShopPoC.Interfaces;
+using OnlineShopPoC.Objects;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace OnlineShopPoC
+namespace OnlineShopPoC.Services
 {
     /// <summary>
     /// Represents a catalog of products in an online shop.
@@ -190,6 +192,6 @@ namespace OnlineShopPoC
             return products;
         }
 
-        
+
     }
 }

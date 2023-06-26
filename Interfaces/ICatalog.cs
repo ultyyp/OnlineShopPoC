@@ -2,8 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OnlineShopPoC.Objects;
 
-namespace OnlineShopPoC
+namespace OnlineShopPoC.Interfaces
 {
     /// <summary>
     /// Represents a catalog of products in an online shop.

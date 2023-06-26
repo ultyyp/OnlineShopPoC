@@ -1,4 +1,6 @@
-﻿namespace OnlineShopPoC
+﻿using OnlineShopPoC.Interfaces;
+
+namespace OnlineShopPoC.Services
 {
     /// <summary>
     /// Represents an in-memory implementation of a time client for retrieving date and time information.

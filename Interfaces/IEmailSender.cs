@@ -1,6 +1,7 @@
 ﻿using SendGrid;
+using System.Net;
 
-namespace OnlineShopPoC
+namespace OnlineShopPoC.Interfaces
 {
     /// <summary>
     /// Interface for sending emails.
@@ -14,6 +15,6 @@ namespace OnlineShopPoC
         /// <param name="subject">The email subject.</param>
         /// <param name="body">The email body.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task<Response> SendEmailAsync(string recipient, string subject, string body);
+        public Task SendEmailAsync(string recipient, string subject, string body);
     }
 }

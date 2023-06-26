@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OnlineShopPoC
+namespace OnlineShopPoC.Objects
 {
     public class SendGridConfig
     {

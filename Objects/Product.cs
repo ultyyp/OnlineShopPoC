@@ -1,4 +1,4 @@
-﻿namespace OnlineShopPoC
+﻿namespace OnlineShopPoC.Objects
 {
     /// <summary>
     /// Represents a product in an online shop.

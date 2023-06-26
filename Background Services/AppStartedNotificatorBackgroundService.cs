@@ -2,6 +2,7 @@
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using OnlineShopPoC.Interfaces;
 using Serilog;
 using System;
 using System.Diagnostics;
