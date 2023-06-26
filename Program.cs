@@ -5,16 +5,21 @@ using OnlineShopPoC;
 using System.Collections.Generic;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
+using System.Reflection;
+using Serilog;
 
+//Builder
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Logger
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+
 //Options
-builder.Services.AddOptions<SendGridConfig>()
-    .BindConfiguration("SendGridConfig")
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
+builder.Configuration.AddUserSecrets<SendGridConfig>();
 
 //Singletons
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();

@@ -2,6 +2,7 @@
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using Serilog;
 using System;
 using System.Diagnostics;
 using System.Net.Mail;
@@ -39,14 +40,14 @@ namespace OnlineShopPoC
             var emailSender = localServiceProvider.GetRequiredService<IEmailSender>();
 
             await SendStartupEmail(emailSender);
-            Console.WriteLine("Startup Email Sent");
+            Log.Information("Startup Email Sent");
 
             using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
             Stopwatch sw = Stopwatch.StartNew();
             while (await timer.WaitForNextTickAsync(stoppingToken))
             {
                 await SendStatusEmail(emailSender);
-                Console.WriteLine("Status Email Sent");
+                Log.Information("Status Email Sent");
             }
         }
 
