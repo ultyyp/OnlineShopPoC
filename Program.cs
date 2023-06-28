@@ -44,7 +44,7 @@ try
             .MinimumLevel.Information() //<- Минимальный уровень для всех приемников
             .WriteTo.File(@"G:\ITSTEP\SP Projects\ASP.NET\Lessons\Lesson 2 - OnlineShopPoC\OnlineShopPoC\Logs\log.txt", rollingInterval: RollingInterval.Day)
             .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
-            .WriteTo.Seq("http://localhost:5294")
+            .WriteTo.Seq("http://localhost:5341")
             .WriteTo.Sentry(s =>
             {
                 s.MinimumBreadcrumbLevel = LogEventLevel.Debug;

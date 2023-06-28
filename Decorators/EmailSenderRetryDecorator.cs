@@ -43,30 +43,23 @@ namespace OnlineShopPoC.Decorators
         /// <returns>A Task representing the asynchronous operation with the response.</returns>
         public async Task SendEmailAsync(string recipient, string subject, string body)
         {
-            try
-            {
-                var policy = Policy.Handle<Exception>()
+            var policy = Policy.Handle<Exception>()
                 .WaitAndRetryAsync(retryCount: _emailRetryAttempts, sleepDurationProvider: (attemptCount) => TimeSpan.FromSeconds(attemptCount * 2),
                 onRetry: (exception, sleepDuration, attemptNumber, context) =>
                 {
                     _logger.LogWarning(
-                    exception, "Error while sending email. Retrying in {Time}, Attempt number: {Attempt}", sleepDuration, attemptNumber);
+                    exception, "Error while sending email, Attempt number: {Attempt}. Retrying in {Time}...", attemptNumber, sleepDuration);
                 });
 
 
-                var result = await policy.ExecuteAndCaptureAsync(
-                                            () =>_emailSender.SendEmailAsync(recipient, subject, body));
+            var result = await policy.ExecuteAndCaptureAsync(
+                                        () => _emailSender.SendEmailAsync(recipient, subject, body));
 
-                if (result.Outcome == OutcomeType.Failure)
-                {
-                    _logger.LogError(result.FinalException, "There was an error while sending email");
-                }
-
-            }
-            catch (Exception ex)
+            if (result.Outcome == OutcomeType.Failure)
             {
-                _logger.LogError(ex, "Error While Connecting To The Server!");
+                _logger.LogError(result.FinalException, "There was an error while sending email");
             }
+
         }   
     }
 }
