@@ -12,11 +12,18 @@ using OnlineShopPoC.Decorators;
 using OnlineShopPoC.Services;
 using OnlineShopPoC.Objects;
 using Serilog.Events;
+using Sentry;
 
 Log.Logger = new LoggerConfiguration()
-   .WriteTo.Console()
+   .WriteTo.Sentry(o =>
+   {
+       // Debug and higher are stored as breadcrumbs (default is Information)
+       o.MinimumBreadcrumbLevel = LogEventLevel.Debug;
+       // Warning and higher is sent as event (default is Error)
+       o.MinimumEventLevel = LogEventLevel.Warning;
+   })
    .CreateBootstrapLogger();
-Log.Information("Starting up");
+   Log.Information("Starting up");
 
 
 try
@@ -27,15 +34,23 @@ try
     var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.WebHost.UseSentry(Environment.GetEnvironmentVariable("sentry_dsn")!);
+
 
     //Logger
-    builder.Host.UseSerilog((ctx, conf) =>
+    builder.Host.UseSerilog((_, c) =>
     {
-        conf
+        c.Enrich.FromLogContext()
             .MinimumLevel.Information() //<- Минимальный уровень для всех приемников
-            .WriteTo.File("log-.txt", rollingInterval: RollingInterval.Day)
+            .WriteTo.File(@"G:\ITSTEP\SP Projects\ASP.NET\Lessons\Lesson 2 - OnlineShopPoC\OnlineShopPoC\Logs\log.txt", rollingInterval: RollingInterval.Day)
             .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
-        ;
+            .WriteTo.Sentry(s =>
+            {
+                s.MinimumBreadcrumbLevel = LogEventLevel.Debug;
+                s.MinimumEventLevel = LogEventLevel.Warning;
+            });
+            
+
     });
 
 
@@ -116,7 +131,7 @@ try
         return Results.Accepted($"/products/all");
     }
 
-
+    app.UseSentryTracing();
     app.Run();
 
 }

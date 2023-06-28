@@ -14,10 +14,17 @@
     <PackageReference Include="Scrutor" Version="4.2.2" />
     <PackageReference Include="SendGrid" Version="9.28.1" />
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
+    <PackageReference Include="Sentry" Version="3.33.1" />
+    <PackageReference Include="Sentry.AspNetCore" Version="3.33.1" />
+    <PackageReference Include="Sentry.Serilog" Version="3.33.1" />
     <PackageReference Include="serilog.aspnetcore" Version="7.0.0" />
     <PackageReference Include="serilog.expressions" Version="3.4.1" />
     <PackageReference Include="serilog.sinks.seq" Version="5.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>

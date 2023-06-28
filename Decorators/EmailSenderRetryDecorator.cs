@@ -45,13 +45,14 @@ namespace OnlineShopPoC.Decorators
         {
             try
             {
-                AsyncRetryPolicy policy = Policy
-                .Handle<Exception>()
-                .RetryAsync(_emailRetryAttempts, onRetry: (exception, retryAttempt) =>
+                var policy = Policy.Handle<Exception>()
+                .WaitAndRetryAsync(retryCount: _emailRetryAttempts, sleepDurationProvider: (attemptCount) => TimeSpan.FromSeconds(attemptCount * 2),
+                onRetry: (exception, sleepDuration, attemptNumber, context) =>
                 {
                     _logger.LogWarning(
-                    exception, "Error while sending email. Retrying: {Attempt}", retryAttempt);
+                    exception, "Error while sending email. Retrying in {Time}, Attempt number: {Attempt}", sleepDuration, attemptNumber);
                 });
+
 
                 var result = await policy.ExecuteAndCaptureAsync(
                                             () =>_emailSender.SendEmailAsync(recipient, subject, body));
